@@ -13,6 +13,9 @@ const schemas = {
   blogDETAIL: {
     id: Joi.number().min(1).required(),
   },
+  pList: {
+    qty: Joi.number().required(),
+  },
 };
 
 module.exports = schemas;

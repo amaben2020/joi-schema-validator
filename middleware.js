@@ -2,6 +2,7 @@ const Joi = require('joi');
 
 const middleware = (schema, property) => {
   return (req, res, next) => {
+    req.requestTime = Date.now();
     const { error } = Joi.validate(req[property], schema);
 
     const valid = error == null;
@@ -10,8 +11,6 @@ const middleware = (schema, property) => {
     } else {
       const { details } = error;
       const message = details.map((i) => i.message).join(',');
-      console.log('error', message);
-
       res.status(422).json({
         error: message,
       });
@@ -19,4 +18,22 @@ const middleware = (schema, property) => {
   };
 };
 
-module.exports = middleware;
+const mware2 = (schema, reqType) => {
+  return (req, res, next) => {
+    const { error } = Joi.validate(req[reqType], schema);
+
+    const noError = error == null;
+
+    if (noError) {
+      next();
+    } else {
+      const { details } = error;
+      const message = details.map((i) => i.message).join(',');
+      res.status(422).json({
+        error: message,
+      });
+    }
+  };
+};
+
+module.exports = { middleware, mware2 };
